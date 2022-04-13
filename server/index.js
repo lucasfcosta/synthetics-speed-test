@@ -1,4 +1,5 @@
 const express = require('express');
+const ngrok = require('ngrok');
 
 const app = express();
 
@@ -6,6 +7,13 @@ const port = process.env.PORT || 3000;
 
 const start = () => {
     return new Promise(resolve => {
+        app.get('/results', async (req, res) => {
+            const avgUpload = `Average Upload: ${req.query.avgUpload}`;
+            const allUploadsMbps = `All Upload MBPs: ${req.query.allUploadMBps}`;
+            const body = [avgUpload, allUploadsMbps].join("\n");
+            res.write(body);
+            res.end()
+        });
 
         app.post('/upload', async (req, res) => {
             let byteCount = 0
@@ -15,7 +23,6 @@ const start = () => {
             })
 
             req.on("end", () => {
-                console.log(`Request size: ${byteCount/1000}MB`);
                 res.status(200)
                 res.end()
             })
@@ -28,4 +35,9 @@ const start = () => {
     });
 }
 
-start();
+(async () => {
+  await start();
+  const ngrokUrl = await ngrok.connect(port);
+  console.log("Upload server ready. Use the following url for your monitor: ")
+  console.log(ngrokUrl)
+})();

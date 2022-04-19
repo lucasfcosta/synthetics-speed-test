@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "prettier": "prettier --write ./journeys ./server"
+  },
+  "dependencies": {
+    "prettier": "^2.6.2"
+  }
+}
